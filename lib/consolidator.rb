@@ -1,6 +1,8 @@
 require_relative "require_resolver"
 
 module Consolidate
+  VERSION = "0.0.1"
+
   class Consolidator
     def initialize entry, **opts
       # @parser = Parser::CurrentRuby.new

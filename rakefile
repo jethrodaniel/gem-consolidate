@@ -1,8 +1,12 @@
 require "bundler/gem_tasks"
 
-task :default => :install
-# task :default => :test
+task :default => %i[test install fib]
 
-task(:test) do
+task :test do
   Dir.chdir("example") { sh "bundle exec bench test" }
+  sh "bundle exec bench test"
+end
+
+task :fib do
+  sh "gem consolidate example/lib/fib.rb"
 end
