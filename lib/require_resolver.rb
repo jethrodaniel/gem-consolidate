@@ -97,7 +97,7 @@ class RequireResolver < Parser::TreeRewriter
 
     replacement = File.read(file)
     banner = "#" + "-"*60 + "\n# #{file}\n#" + "-" * 60 + "\n"
-    replacement = banner + replacement + "-" * 60 + "\n"
+    replacement = banner + replacement + "#" + "-" * 60 + "\n"
 
     replace node.location.expression, "\n#{replacement.strip}\n"
   end
