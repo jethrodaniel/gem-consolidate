@@ -25,25 +25,9 @@
 require "pathname"
 require "parser/current"
 
-class RequireResolver < Parser::TreeRewriter
-  STD_LIBS = %w[
-    English
-    logger
-    reline
-    e2mmap
-    ripper
-    fileutils
-    jruby
-    readline
-    io/console
-    timeout
-    forwardable
-    pathname
-    tempfile
-    fiddle/import
-    win32api
-  ].freeze
+require_relative "stdlib"
 
+class RequireResolver < Parser::TreeRewriter
   def initialize file
     super()
 
@@ -59,7 +43,7 @@ class RequireResolver < Parser::TreeRewriter
     puts "#" + "-"* 60 + "\n"
     puts <<~MSG
       # Automatically consolidated from `require` and
-      # `require_relative` calls in `#{file}`.
+      # `require_relative` calls.
       #
       # ruby  : #{RUBY_VERSION}
       # parser: #{Parser::VERSION}
@@ -75,8 +59,6 @@ class RequireResolver < Parser::TreeRewriter
     req_type = node.children[1]
 
     return unless %i[require require_relative].include?(req_type)
-
-    warn "`#{req_type}` found"
 
     warn "object to `#{req_type}` is not a string" unless node.children[2].type == :str
 
@@ -98,30 +80,29 @@ class RequireResolver < Parser::TreeRewriter
       return
     end
 
-    warn "===> #{lib}"
     if @files.include?(lib)
       warn "=> #{lib} (already seen)"
+      puts "# #{lib}"
       remove(node.location.expression)
       return
     end
+    @files << lib
 
     warn "=> #{lib}"
-    # req_path.visited = true
-    # req_file = req_path.path
-
     # consolidator = RequireResolver.new
     # req_contents = consolidator.consolidate(req_file, @parser, @files, :no_stdlib => @no_stdlib)
 
     # TODO: what order does Ruby use here?
-    file = (@root + lib).dirname.glob("*.{rb,so}").first
+    file = Dir.glob("#{@root + lib}.{rb,so}").first
+
     replacement = File.read(file)
     banner = "#" + "-"*60 + "\n# #{file}\n#" + "-" * 60 + "\n"
     replacement = banner + replacement + "-" * 60 + "\n"
 
-    replace node.location.expression, "\n#{replacement}\n"
+    replace node.location.expression, "\n#{replacement.strip}\n"
   end
 
   def stdlib? lib
-    STD_LIBS.include? lib
+    Consolidate::STD_LIBS.include? lib
   end
 end
