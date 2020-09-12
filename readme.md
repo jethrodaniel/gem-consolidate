@@ -1,12 +1,12 @@
 # gem-consolidate
 
-Consolidate a gem into a single file.
+Consolidate a gem/script into a single file.
 
 ## install
 
     git clone https://github.com/jethrodaniel/gem-consolidate
-    cd gem-consolidate && gem build gem-consolidate && gem install gem-consolidate-0.1.0.gem && cd -
-    rm -r gem-consolidate
+    cd gem-consolidate
+    make
 
 ## Usage
 
