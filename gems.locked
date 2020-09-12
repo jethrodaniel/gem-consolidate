@@ -8,10 +8,18 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.1)
-    minitest (5.14.1)
+    byebug (11.1.3)
+    coderay (1.1.3)
+    method_source (1.0.0)
     parallel (1.19.2)
     parser (2.7.1.4)
       ast (~> 2.4.1)
+    pry (0.13.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    pry-byebug (3.9.0)
+      byebug (~> 11.0)
+      pry (~> 0.13.0)
     rainbow (3.0.0)
     rake (12.3.3)
     regexp_parser (1.7.1)
@@ -28,6 +36,9 @@ GEM
     rubocop-ast (0.3.0)
       parser (>= 2.7.1.4)
     ruby-progressbar (1.10.1)
+    test_bench (1.2.0.5)
+      test_bench-fixture (>= 1.0.0.0)
+    test_bench-fixture (1.3.1.0)
     unicode-display_width (1.7.0)
 
 PLATFORMS
@@ -35,9 +46,12 @@ PLATFORMS
 
 DEPENDENCIES
   gem-consolidate!
-  minitest (~> 5.0)
-  rake (~> 12.0)
-  rubocop (~> 0.89.0)
+  parser
+  pry
+  pry-byebug
+  rake
+  rubocop
+  test_bench
 
 BUNDLED WITH
    2.1.4

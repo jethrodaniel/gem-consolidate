@@ -1,2 +1,3 @@
+B=bundle exec
 1:
-	ruby ./bin/consolidate.rb example/lib/fib.rb 2>/dev/null
+	$(B) rake && $(B) gem consolidate example/lib/fib.rb

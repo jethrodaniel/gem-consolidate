@@ -1,15 +1,16 @@
-require "rubygems/consolidate/command"
-require "rubygems/consolidate/consolidate"
+require_relative "../../consolidate"
 
-class Gem::Commands::ConsolidateCommand < Gem::Consolidate::Command
+require "rubygems/command"
+
+class Gem::Commands::ConsolidateCommand < ::Gem::Command
   def initialize
-    super "consolidate", "consolidate a gem, print to stdout"
+    super "consolidate", "consolidate a Ruby script or gem, print to stdout"
 
-    add_option "--footer=FOOTER", "text to append at end of file" do |footer, _opts|
+    add_option "--footer=FOOTER", "text to append at end of file" do |footer|
       options[:footer] = footer
     end
 
-    add_option "--header=HEADER", "text to append at beginning of file" do |header, _opts|
+    add_option "--header=HEADER", "text to append at beginning of file" do |header|
       options[:header] = header
     end
 
@@ -19,7 +20,7 @@ class Gem::Commands::ConsolidateCommand < Gem::Consolidate::Command
   end
 
   def usage
-    "#{program_name} GEM [options]"
+    "#{program_name} {GEM,FILE} [options...]"
   end
 
   def description
@@ -29,31 +30,23 @@ class Gem::Commands::ConsolidateCommand < Gem::Consolidate::Command
 
       Note:
 
-        - no `require_relative` support
-        - gem entry **must** by <your_gem/lib/your_gem.rb>
+        - only `require_relative` supported
+        # - gem entry **must** by <your_gem/lib/your_gem.rb>
         - only recognizes the literal `require`s, i.e, no `send(:require, "lib")`
     MSG
   end
 
   def arguments
-    "GEM\tname of gem to consolidate"
+    "GEM, FILE\tname of gem or path of the script to consolidate"
   end
 
   def execute
     name = options[:args].first
-    raise Gem::CommandLineError, "missing GEM argument" unless name
+    raise Gem::CommandLineError, "missing GEM or FILE" unless name
 
-    gemspec = Gem::Specification.find_by_name(options[:args].first)
-    warn "Consolidating gem #{gemspec.name}..."
-
-    # @todo: find entry point the _right_ way: https://github.com/rubygems/rubygems/blob/master/lib/rubygems/commands/which_command.rb
-    entry_point = File.join(gemspec.gem_dir, "lib/#{gemspec.name}.rb")
-
-    puts GemConsolidator.new(
-      entry_point,
-      :header    => options[:header],
-      :footer    => options[:footer],
-      :no_stdlib => options[:no_stdlib]
+    Consolidate::Consolidator.new(
+      name,
+      **options.slice(:header, :footer, :stdlib)
     ).run
   end
 end
