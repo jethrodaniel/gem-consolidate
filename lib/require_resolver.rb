@@ -34,6 +34,7 @@ class RequireResolver < Parser::TreeRewriter
     @file  = Pathname.new(file)
     @location = opts[:location] || Pathname.new(Dir.pwd)
     @files = opts[:files] || [@file]
+    @indent = opts[:indent] || 0
     @buffer = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
     @parser = Parser::CurrentRuby.new
@@ -41,7 +42,8 @@ class RequireResolver < Parser::TreeRewriter
 
   def run
     ast = @parser.parse(@buffer)
-    rewrite(@buffer, ast)
+    out = rewrite(@buffer, ast)
+    out.split("\n").map { |line| "#{'  ' * @indent}#{line}" }.join("\n") + "\n"
   end
 
   # @note Has to be public for Parser::TreeRewriter to do its thing
@@ -100,14 +102,17 @@ class RequireResolver < Parser::TreeRewriter
 
     replacement = RequireResolver.new(
       file,
-      :location => Pathname.new(file).dirname
+      :location => Pathname.new(file).dirname,
+      :indent => @indent + 2
     ).run
 
     f = Pathname.new(file).relative_path_from(Dir.pwd).to_s
-    banner = "#" + "-"*60 + "\n# #{f}\n#" + "-" * 60 + "\n"
+    indent = " " * (@indent + 2)
+    banner = "#{indent}#" + "-"*60 + "\n# #{f}\n#" + "-" * 60 + "\n"
     replacement = banner + replacement + "#" + "-" * 60 + "\n"
 
-    replace node.location.expression, "\n#{replacement.strip}\n"
+    insert_before(node.location.expression, "# ")
+    insert_after(node.location.expression, "\n\n#{replacement.strip}\n")
   end
   alias handle_require handle_require_relative
 
