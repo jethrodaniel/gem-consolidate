@@ -32,9 +32,8 @@ class RequireResolver < Parser::TreeRewriter
     super()
 
     @file  = Pathname.new(file)
-    @root  = @file.dirname
-    @location = opts[:location] || Dir.pwd
-    @files = [@file]
+    @location = opts[:location] || Pathname.new(Dir.pwd)
+    @files = opts[:files] || [@file]
     @buffer = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
     @parser = Parser::CurrentRuby.new
@@ -85,29 +84,23 @@ class RequireResolver < Parser::TreeRewriter
       warn "=> #{lib} (already seen)"
       # puts "# #{lib}"
       # insert_before(node.location.expression, "# ")
-      # remove(node.location.expression)
       insert_before(node.location.expression, "# ")
       insert_after(node.location.expression, " # resolved previously")
       return
     end
-    @files << lib
 
     warn "=> #{lib}"
 
     # TODO: what order does Ruby use here?
-    file = Dir.glob("#{File.join(@location, lib)}.{rb,so}").first
+    file = Dir.glob("#{@location + lib}.{rb,so}").first
 
-    unless file
-      insert_before(node.location.expression, "# ")
-      insert_after(node.location.expression, " # resolved previously")
-      return
-    end
+    raise Error, "#{file} not found" unless file
 
-    # replacement = File.read(file)
-    # replacement = parse(File.read(file))
+    @files << lib
+
     replacement = RequireResolver.new(
       file,
-      :location => @location + lib
+      :location => Pathname.new(file).dirname
     ).run
 
     f = Pathname.new(file).relative_path_from(Dir.pwd).to_s

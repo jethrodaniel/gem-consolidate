@@ -9,7 +9,7 @@ module Consolidate
       @header = opts[:header]
       @footer = opts[:footer]
       @stdlib = opts[:stdlib]
-      @location = File.join(Dir.pwd, File.dirname(entry))
+      @location = Pathname.new(Dir.pwd) + File.dirname(entry)
 
       if gemspec = ::Gem.loaded_specs[entry]
         warn "Consolidating gem #{gemspec.name}..."
