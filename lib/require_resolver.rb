@@ -28,30 +28,21 @@ require "parser/current"
 require_relative "stdlib"
 
 class RequireResolver < Parser::TreeRewriter
-  def initialize file
+  def initialize file, **opts
     super()
 
     @file  = Pathname.new(file)
     @root  = @file.dirname
+    @location = opts[:location] || Dir.pwd
     @files = [@file]
-    buffer = Parser::Source::Buffer.new("(#{file})")
-    buffer.source = File.read(file)
-    parser = Parser::CurrentRuby.new
-    # parser = parser.tap(&:reset)
-    ast = parser.parse(buffer)
+    @buffer = Parser::Source::Buffer.new("(#{file})")
+    @buffer.source = File.read(file)
+    @parser = Parser::CurrentRuby.new
+  end
 
-    puts "#" + "-"* 60 + "\n"
-    puts <<~MSG
-      # Automatically consolidated from `require` and
-      # `require_relative` calls.
-      #
-      # ruby  : #{RUBY_VERSION}
-      # parser: #{Parser::VERSION}
-      #
-      # entry point: `#{file}`
-    MSG
-    puts "#" + "-"* 60 + "\n"
-    puts rewrite(buffer, ast)
+  def run
+    ast = @parser.parse(@buffer)
+    rewrite(@buffer, ast)
   end
 
   # @note Has to be public for Parser::TreeRewriter to do its thing
@@ -67,6 +58,13 @@ class RequireResolver < Parser::TreeRewriter
 
   private
 
+  def parse code
+    buffer = Parser::Source::Buffer.new("")
+    buffer.source = code
+    @parser.reset
+    @parser.parse(buffer)
+  end
+
   # $ ruby-parse -e "require 'ast'"
   # (send nil :require
   #   (str "ast"))
@@ -76,31 +74,49 @@ class RequireResolver < Parser::TreeRewriter
 
     if stdlib?(lib)
       warn "=> #{lib} (stdlib)"
-      remove(node.location.expression) if @no_stdlib
+
+      insert_before(node.location.expression, "# ")
+      insert_after(node.location.expression, " # stdlib excluded")
+      # remove(node.location.expression)
       return
     end
 
     if @files.include?(lib)
       warn "=> #{lib} (already seen)"
-      puts "# #{lib}"
-      remove(node.location.expression)
+      # puts "# #{lib}"
+      # insert_before(node.location.expression, "# ")
+      # remove(node.location.expression)
+      insert_before(node.location.expression, "# ")
+      insert_after(node.location.expression, " # resolved previously")
       return
     end
     @files << lib
 
     warn "=> #{lib}"
-    # consolidator = RequireResolver.new
-    # req_contents = consolidator.consolidate(req_file, @parser, @files, :no_stdlib => @no_stdlib)
 
     # TODO: what order does Ruby use here?
-    file = Dir.glob("#{@root + lib}.{rb,so}").first
+    file = Dir.glob("#{File.join(@location, lib)}.{rb,so}").first
 
-    replacement = File.read(file)
-    banner = "#" + "-"*60 + "\n# #{file}\n#" + "-" * 60 + "\n"
+    unless file
+      insert_before(node.location.expression, "# ")
+      insert_after(node.location.expression, " # resolved previously")
+      return
+    end
+
+    # replacement = File.read(file)
+    # replacement = parse(File.read(file))
+    replacement = RequireResolver.new(
+      file,
+      :location => @location + lib
+    ).run
+
+    f = Pathname.new(file).relative_path_from(Dir.pwd).to_s
+    banner = "#" + "-"*60 + "\n# #{f}\n#" + "-" * 60 + "\n"
     replacement = banner + replacement + "#" + "-" * 60 + "\n"
 
     replace node.location.expression, "\n#{replacement.strip}\n"
   end
+  alias handle_require handle_require_relative
 
   def stdlib? lib
     Consolidate::STD_LIBS.include? lib

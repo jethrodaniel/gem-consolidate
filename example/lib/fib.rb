@@ -1,5 +1,8 @@
+require "English"
+
 require_relative "fib/version"
 require_relative "fib/error"
+require_relative "fib/util/scanner"
 
 module Fib
   def self.fibonacci n
