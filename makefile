@@ -6,7 +6,8 @@ NADA=/dev/null
 	$(CMD) 2>$(NADA)
 2:
 	$(CMD) 1>$(NADA)
-run: fib.bundle.rb
+run: clean fib
+fib: fib.bundle.rb
 	ruby $<
 fib.bundle.rb:
 	$(CMD) --footer='1.upto(10).each{|n|p Fib.fibonacci(n)}' > $@
