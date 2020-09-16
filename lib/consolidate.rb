@@ -1,1 +1,1 @@
-require_relative "consolidator"
+require_relative "consolidate/consolidator"
