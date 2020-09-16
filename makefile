@@ -2,6 +2,8 @@ B=bundle exec
 CMD=$(B) rake install && $(B) gem consolidate example/lib/fib.rb
 # CMD=$(B) bin/consolidate example/lib/fib.rb
 NADA=/dev/null
+0:
+	$(CMD)
 1:
 	$(CMD) 2>$(NADA)
 2:
