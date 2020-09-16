@@ -31,12 +31,12 @@ class RequireResolver < Parser::TreeRewriter
   def initialize file, **opts
     super()
 
-    @file  = Pathname.new(file)
+    @file     = Pathname.new(file)
     @location = opts[:location] || Pathname.new(Dir.pwd)
-    @files = opts[:files] || [@file]
-    @buffer = Parser::Source::Buffer.new("(#{file})")
+    @files    = opts[:files]    || [@file]
+    @parser   = Parser::CurrentRuby.new
+    @buffer   = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
-    @parser = Parser::CurrentRuby.new
   end
 
   def run
@@ -97,7 +97,9 @@ class RequireResolver < Parser::TreeRewriter
       :location => Pathname.new(file).dirname
     ).run
 
-    f = Pathname.new(file).relative_path_from(Dir.pwd).to_s
+    # https://bugs.ruby-lang.org/issues/10011
+    pwd = RUBY_VERSION.gsub(".", "").to_i >= 260 ? Dir.pwd : Pathname.new(Dir.pwd)
+    f = Pathname.new(file).relative_path_from(pwd).to_s
     banner = "#" + "-"*60 + "\n# #{f}\n#" + "-" * 60 + "\n"
     replacement = banner + replacement + "#" + "-" * 60 + "\n"
 
