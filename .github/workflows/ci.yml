@@ -29,5 +29,4 @@ jobs:
 
     - name: run specs
       run: |
-        make
-        make run
+        rake

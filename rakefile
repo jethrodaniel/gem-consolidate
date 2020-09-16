@@ -1,12 +1,28 @@
 require "bundler/gem_tasks"
 
+def be cmd
+  sh "bundle exec #{cmd}"
+end
+
 task :default => %i[test install fib]
 
 task :test do
   Dir.chdir("example") { sh "bundle exec bench test" }
-  sh "bundle exec bench test"
+  be "bench test"
 end
 
-task :fib do
-  sh "gem consolidate example/lib/fib.rb"
+task :fib => 'fib.bundle.rb' do |t|
+  sh "ruby #{t.source}"
+end
+
+file 'fib.bundle.rb' do |t|
+  be "gem consolidate example/lib/fib.rb --footer='1.upto(10).each{|n|p Fib.fibonacci(n)}' > #{t.name}"
+end
+
+task :run => %i[clean install fib]
+task :'1' => %i[clean install] do
+  be "gem consolidate example/lib/fib.rb 2>/dev/null"
+end
+task :'2' => %i[clean install] do
+  be "gem consolidate example/lib/fib.rb 1>/dev/null"
 end
