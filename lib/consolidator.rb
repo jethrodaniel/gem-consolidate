@@ -38,7 +38,9 @@ module Consolidate
       MSG
       puts "#" + "-" * 60 + "\n"
 
+      puts @header if @header
       puts RequireResolver.new(@entry, :location => @location).run
+      puts @footer if @footer
 
       # [@header, single_file, @footer].join("\n").strip
     end
