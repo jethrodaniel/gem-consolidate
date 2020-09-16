@@ -5,6 +5,17 @@ module Consolidate
 
   class Error < StandardError; end
 
+  # todo: setup so that this can be called and tested without `gem`.
+  #
+  # Something like
+  #
+  #     Consolidate::Consolidator.start
+  #
+  # Which uses ARGV and parses its own args.
+  #
+  # optparse is too heavy, as it uses regular expressions. It'd be nice if this
+  # could work on MRuby.
+  #
   class Consolidator
     def initialize entry, **opts
       @entry  = entry

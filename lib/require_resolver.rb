@@ -28,6 +28,7 @@ require "parser/current"
 require_relative "stdlib"
 # require_relative "error"
 
+# todo: namespace this
 class RequireResolver < Parser::TreeRewriter
   class Error < StandardError; end
 
