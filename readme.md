@@ -1,5 +1,9 @@
 # gem-consolidate
 
+![](https://github.com/jethrodaniel/gem-consolidate/workflows/ci/badge.svg)
+![](https://img.shields.io/github/license/jethrodaniel/gem-consolidate.svg)
+![](https://img.shields.io/github/stars/jethrodaniel/gem-consolidate?style=social)
+
 Consolidate a gem/script into a single file.
 
 ## install
@@ -8,14 +12,14 @@ Consolidate a gem/script into a single file.
     cd gem-consolidate
     make
 
-## Usage
+## usage
 
 See `gem consolidate -h`.
 
-## Contributing
+## contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/jethrodaniel/gem-consolidate.
 
-## License
+## license
 
 MIT.
