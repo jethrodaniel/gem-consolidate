@@ -37,6 +37,7 @@ class RequireResolver < Parser::TreeRewriter
     @file     = Pathname.new(file)
     @location = opts[:location] || Pathname.new(Dir.pwd)
     @files    = opts[:files]    || [@file]
+    @indent   = opts[:indent]   || 0
     @parser   = Parser::CurrentRuby.new
     @buffer   = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
@@ -97,14 +98,17 @@ class RequireResolver < Parser::TreeRewriter
 
     replacement = RequireResolver.new(
       file,
-      :location => Pathname.new(file).dirname
+      :location => Pathname.new(file).dirname,
+      :indent => @indent + 1
     ).run
 
     # https://bugs.ruby-lang.org/issues/10011
     pwd = RUBY_VERSION.gsub(".", "").to_i >= 260 ? Dir.pwd : Pathname.new(Dir.pwd)
     f = Pathname.new(file).relative_path_from(pwd).to_s
-    banner = "#" + "-"*60 + "\n# #{f}\n#" + "-" * 60 + "\n"
-    replacement = banner + replacement + "#" + "-" * 60 + "\n"
+
+    # todo: clean up this evil
+    banner = "##{'#' * @indent}" + "-"*(60-@indent) + "\n# #{f}\n##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
+    replacement = banner + replacement + "##{'#' * @indent}" + "-" * (60-@indent) + "\n"
 
     insert_before(node.location.expression, "# ")
     insert_after(node.location.expression, "\n\n#{replacement.strip}\n")
