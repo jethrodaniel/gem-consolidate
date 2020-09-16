@@ -3,6 +3,8 @@ require_relative "require_resolver"
 module Consolidate
   VERSION = "0.0.1".freeze
 
+  class Error < StandardError; end
+
   class Consolidator
     def initialize entry, **opts
       @entry  = entry
@@ -17,7 +19,7 @@ module Consolidate
       elsif File.file?(entry)
         warn "Consolidating script `#{entry}`..."
       else
-        raise Error, "gem or script `#{name}` not found"
+        raise Error, "gem or script `#{entry}` not found"
       end
     end
 

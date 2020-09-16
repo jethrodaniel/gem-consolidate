@@ -26,8 +26,11 @@ require "pathname"
 require "parser/current"
 
 require_relative "stdlib"
+# require_relative "error"
 
 class RequireResolver < Parser::TreeRewriter
+  class Error < StandardError; end
+
   def initialize file, **opts
     super()
 
@@ -88,7 +91,7 @@ class RequireResolver < Parser::TreeRewriter
     # TODO: what order does Ruby use here?
     file = Dir.glob("#{@location + lib}.{rb,so}").first
 
-    raise Error, "#{file} not found" unless file
+    raise Error, "library `#{lib}`could not be resolved to a file" unless file
 
     @files << lib
 
