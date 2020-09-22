@@ -15,3 +15,5 @@ module Fib
     flip[n%2]
   end
 end
+
+require_relative "fib/util"
