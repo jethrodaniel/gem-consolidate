@@ -4,17 +4,33 @@
 ![](https://img.shields.io/github/license/jethrodaniel/gem-consolidate.svg)
 ![](https://img.shields.io/github/stars/jethrodaniel/gem-consolidate?style=social)
 
-Consolidate a gem/script into a single file.
+Preprocess `require` like `#include`.
 
 ## install
 
-    git clone https://github.com/jethrodaniel/gem-consolidate
-    cd gem-consolidate
-    make
+```
+git clone https://github.com/jethrodaniel/gem-consolidate
+cd gem-consolidate
+bundle && bundle exec rake
+```
 
 ## usage
 
 See `gem consolidate -h`.
+
+## limitations
+
+Only literal `require`s or `require_relative`s followed by a string will be processed.
+
+## status
+
+- [x] `require_relative`
+- [ ] `require`
+- [ ] ensure only top-level `require`s (i.e, can't require inside a method)
+- [ ] panic on `autoload`
+- [ ] process entire `gem`s, reading the `gemspec`, considering `require_paths`, etc.
+- [ ] process entire input, use `TSort`
+- [ ] test for circular dependencies
 
 ## contributing
 
