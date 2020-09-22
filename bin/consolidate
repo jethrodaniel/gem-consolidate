@@ -2,7 +2,4 @@
 
 require "consolidate"
 
-if $0 == __FILE__
-  abort "input file not provided" unless f = ARGV.first
-  Consolidate::Consolidator.new(f).run
-end
+Consolidate.start
