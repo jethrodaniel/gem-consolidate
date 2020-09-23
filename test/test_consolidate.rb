@@ -7,7 +7,7 @@ context Consolidate do
 
   test "snapshot matches" do
     snapshot = File.join(__dir__, "snapshot.rb")
-    `bundle exec bin/consolidate example/lib/fib.rb 2>/dev/null > out`
+    `bundle exec exe/consolidate example/lib/fib.rb 2>/dev/null > out`
 
     detail "snapshot does not match! Run rake:snapshot"
     detail "=== diff ===\n```\n#{`diff #{snapshot} out`}```\n"
