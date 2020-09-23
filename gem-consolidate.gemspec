@@ -14,9 +14,11 @@ Gem::Specification.new do |s|
   s.metadata["homepage_uri"] = s.homepage
   s.metadata["source_code_uri"] = s.homepage
 
+  s.require_paths = ["lib"]
   s.files         = Dir.glob("lib/**/*.rb")
   s.test_files    = Dir.glob("spec/**/*.rb")
-  s.require_paths = ["lib"]
+  s.bindir        = "exe"
+  s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
   s.add_dependency "parser"
 

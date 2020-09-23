@@ -40,6 +40,7 @@ module Consolidate
     end
 
     def run
+      puts @header if @header
       puts "#" + "-" * 60 + "\n"
       puts <<~MSG
         # Automatically consolidated from `require` and
@@ -52,7 +53,6 @@ module Consolidate
       MSG
       puts "#" + "-" * 60 + "\n"
       puts body
-      puts @header if @header
       puts @footer if @footer
 
       # [@header, single_file, @footer].join("\n").strip
