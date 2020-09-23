@@ -23,6 +23,7 @@ module Consolidate
       @footer = opts[:footer]
       @stdlib = opts[:stdlib]
       @location = Pathname.new(Dir.pwd) + File.dirname(entry)
+      @files = []
 
       if gemspec = ::Gem.loaded_specs[entry]
         warn "Consolidating gem #{gemspec.name}..."
@@ -50,12 +51,24 @@ module Consolidate
         # entry point: `#{@entry}`
       MSG
       puts "#" + "-" * 60 + "\n"
-
+      puts body
       puts @header if @header
-      puts RequireResolver.new(@entry, :location => @location).run
       puts @footer if @footer
 
       # [@header, single_file, @footer].join("\n").strip
+    end
+
+    private
+
+    def content
+    end
+
+    def body
+      RequireResolver.new(
+        @entry,
+        :location => @location,
+        :files => @files
+      ).run
     end
   end
 end

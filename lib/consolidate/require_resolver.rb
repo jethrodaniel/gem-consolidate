@@ -28,17 +28,18 @@ require "parser/current"
 require_relative "stdlib"
 # require_relative "error"
 
-# todo: namespace this
+# TODO: namespace this
 class RequireResolver < Parser::TreeRewriter
   class Error < StandardError; end
 
   def initialize file, **opts
     super()
 
-    @file     = Pathname.new(file)
+    @file     = Pathname.new(file).realpath
     @location = opts[:location] || Pathname.new(Dir.pwd)
-    @files    = opts[:files]    || [@file]
-    @indent   = opts[:indent]   || 0
+    @files    = opts[:files] || abort("missing files")
+    @files << @file.realpath
+    @indent   = opts[:indent] || 0
     @parser   = Parser::CurrentRuby.new
     @buffer   = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
@@ -79,7 +80,13 @@ class RequireResolver < Parser::TreeRewriter
       return
     end
 
-    if @files.include?(lib)
+    # TODO: what order does Ruby use here?
+    file = Dir.glob("#{@location + lib}.{rb,so}").first
+    file = Pathname.new(file).realpath
+
+    # p @files
+    # p file
+    if @files.include?(file)
       warn "=> #{lib} (already seen)"
       # puts "# #{lib}"
       # insert_before(node.location.expression, "# ")
@@ -90,26 +97,22 @@ class RequireResolver < Parser::TreeRewriter
 
     warn "=> #{lib}"
 
-    # TODO: what order does Ruby use here?
-    file = Dir.glob("#{@location + lib}.{rb,so}").first
-
     raise Error, "library `#{lib}`could not be resolved to a file" unless file
-
-    @files << lib
 
     replacement = RequireResolver.new(
       file,
       :location => Pathname.new(file).dirname,
-      :indent => @indent + 1
+      :indent   => @indent + 1,
+      :files    => @files
     ).run
 
     # https://bugs.ruby-lang.org/issues/10011
     pwd = RUBY_VERSION.gsub(".", "").to_i >= 260 ? Dir.pwd : Pathname.new(Dir.pwd)
     f = Pathname.new(file).relative_path_from(pwd).to_s
 
-    # todo: clean up this evil
-    banner = "##{'#' * @indent}" + "-"*(60-@indent) + "\n# #{f}\n##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
-    replacement = banner + replacement + "##{'#' * @indent}" + "-" * (60-@indent) + "\n"
+    # TODO: clean up this evil
+    banner = "##{'#' * @indent}" + "-" * (60 - @indent) + "\n# #{f}\n##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
+    replacement = banner + replacement + "##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
 
     insert_before(node.location.expression, "# ")
     insert_after(node.location.expression, "\n\n#{replacement.strip}\n")

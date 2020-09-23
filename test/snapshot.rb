@@ -34,6 +34,7 @@ end
 module Fib
   class Scanner
   end
+  S = Scanner
 end
 ##-----------------------------------------------------------
 
@@ -44,6 +45,7 @@ end
 ##-----------------------------------------------------------
 module Fib
   WOW = "- Owen Wilson".freeze
+  W = WOW
 end
 ##-----------------------------------------------------------
 
@@ -51,22 +53,11 @@ end
 module Fib
   class Error < StandardError
   end
+  E = Error
 end
 #------------------------------------------------------------
 
-# require_relative "fib/util/scanner"
-
-#------------------------------------------------------------
-# example/lib/fib/util/scanner.rb
-#------------------------------------------------------------
-# require "strscan" # stdlib excluded
-
-module Fib
-  class Scanner
-  end
-end
-#------------------------------------------------------------
-
+# require_relative "fib/util/scanner" # resolved previously
 
 module Fib
   def self.fibonacci n
@@ -101,10 +92,25 @@ module Fib
 end
 ##-----------------------------------------------------------
 
+# require_relative "util/parser"
+
+##-----------------------------------------------------------
+# example/lib/fib/util/parser.rb
+##-----------------------------------------------------------
+# require_relative "scanner" # resolved previously
+
+module Fib
+  class Parser
+  end
+  P = Parser
+end
+##-----------------------------------------------------------
+
 
 module Fib
   module Utils
     A = Over::NineThousand::MSG
   end
+  U = Utils
 end
 #------------------------------------------------------------
