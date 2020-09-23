@@ -21,7 +21,7 @@ module Consolidate
       @entry  = entry
       @header = opts[:header]
       @footer = opts[:footer]
-      @stdlib = opts[:stdlib]
+      @stdlib = opts[:stdlib] || true
       @location = Pathname.new(Dir.pwd) + File.dirname(entry)
       @files = []
 
@@ -60,14 +60,12 @@ module Consolidate
 
     private
 
-    def content
-    end
-
     def body
       RequireResolver.new(
         @entry,
         :location => @location,
-        :files => @files
+        :files => @files,
+        :stdlib => @stdlib
       ).run
     end
   end

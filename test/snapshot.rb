@@ -7,7 +7,7 @@
 #
 # entry point: `example/lib/fib.rb`
 #------------------------------------------------------------
-# require "English" # stdlib excluded
+require "English"
 
 # require_relative "fib/version"
 
@@ -29,7 +29,7 @@ end
 ##-----------------------------------------------------------
 # example/lib/fib/util/scanner.rb
 ##-----------------------------------------------------------
-# require "strscan" # stdlib excluded
+require "strscan"
 
 module Fib
   class Scanner

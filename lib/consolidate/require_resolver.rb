@@ -40,6 +40,7 @@ class RequireResolver < Parser::TreeRewriter
     @files    = opts[:files] || abort("missing files")
     @files << @file.realpath
     @indent   = opts[:indent] || 0
+    @stdlib   = opts[:stdlib] || true
     @parser   = Parser::CurrentRuby.new
     @buffer   = Parser::Source::Buffer.new("(#{file})")
     @buffer.source = File.read(file)
@@ -64,9 +65,11 @@ class RequireResolver < Parser::TreeRewriter
     if stdlib?(lib) && req_type == :require
       warn "=> #{lib} (stdlib)"
 
-      # insert_before(node.location.expression, "# ")
-      # insert_after(node.location.expression, " # stdlib excluded")
-      # remove(node.location.expression)
+      unless @stdlib
+        insert_before(node.location.expression, "# ")
+        insert_after(node.location.expression, " # stdlib excluded")
+      end
+
       return
     end
 
