@@ -59,7 +59,18 @@ class RequireResolver < Parser::TreeRewriter
 
     warn "object to `#{req_type}` is not a string" unless node.children[2].type == :str
 
-    send("handle_#{req_type}", node)
+    lib = node.children[2].children[0]
+
+    if stdlib?(lib) && req_type == :require
+      warn "=> #{lib} (stdlib)"
+
+      # insert_before(node.location.expression, "# ")
+      # insert_after(node.location.expression, " # stdlib excluded")
+      # remove(node.location.expression)
+      return
+    end
+
+    send("handle_#{req_type}", lib, node)
   end
 
   private
@@ -68,17 +79,7 @@ class RequireResolver < Parser::TreeRewriter
   # (send nil :require
   #   (str "ast"))
   #
-  def handle_require_relative node
-    lib = node.children[2].children[0]
-
-    if stdlib?(lib)
-      warn "=> #{lib} (stdlib)"
-
-      insert_before(node.location.expression, "# ")
-      insert_after(node.location.expression, " # stdlib excluded")
-      # remove(node.location.expression)
-      return
-    end
+  def handle_require_relative lib, node
 
     # TODO: what order does Ruby use here?
     file = Dir.glob("#{@location + lib}.{rb,so}").first
