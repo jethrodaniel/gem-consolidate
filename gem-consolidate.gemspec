@@ -1,8 +1,9 @@
 $:.push File.expand_path("lib", __dir__)
+require_relative "lib/consolidate/version"
 
 Gem::Specification.new do |s|
   s.name          = "gem-consolidate"
-  s.version       = "0.1.0"
+  s.version       = Consolidate::VERSION
   s.authors       = ["Mark Delk"]
   s.email         = ["jethrodaniel@gmail.com"]
   s.summary       = "Consolidate a gem into a single file"

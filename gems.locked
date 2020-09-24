@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gem-consolidate (0.1.0)
+    gem-consolidate (0.1.1)
       parser
 
 GEM

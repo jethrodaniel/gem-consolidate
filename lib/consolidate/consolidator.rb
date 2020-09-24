@@ -1,10 +1,8 @@
 require_relative "require_resolver"
+require_relative "version"
+require_relative "error"
 
 module Consolidate
-  VERSION = "0.0.1".freeze
-
-  class Error < StandardError; end
-
   # todo: setup so that this can be called and tested without `gem`.
   #
   # Something like
@@ -17,6 +15,8 @@ module Consolidate
   # could work on MRuby.
   #
   class Consolidator
+    class Error < Consolidate::Error; end
+
     def initialize entry, **opts
       @entry  = entry
       @header = opts[:header]

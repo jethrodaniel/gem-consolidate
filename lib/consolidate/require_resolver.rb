@@ -26,11 +26,11 @@ require "pathname"
 require "parser/current"
 
 require_relative "stdlib"
-# require_relative "error"
+require_relative "error"
 
 # TODO: namespace this
 class RequireResolver < Parser::TreeRewriter
-  class Error < StandardError; end
+  class Error < Consolidate::Error; end
 
   def initialize file, **opts
     super()
