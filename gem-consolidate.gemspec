@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.files         = Dir["lib/**/*.rb"] + Dir["exe/*"]
   s.test_files    = Dir["test/**/*.rb"]
   s.bindir        = "exe"
-  s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  s.executables   = Dir["exe/*"].map { |f| File.basename(f) }
 
   s.add_dependency "parser"
 
