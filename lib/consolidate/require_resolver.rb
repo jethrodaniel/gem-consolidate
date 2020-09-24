@@ -86,6 +86,9 @@ class RequireResolver < Parser::TreeRewriter
 
     # TODO: what order does Ruby use here?
     file = Dir.glob("#{@location + lib}.{rb,so}").first
+
+    raise Error, "library `#{lib}`could not be resolved to a file" unless file
+
     file = Pathname.new(file).realpath
 
     # p @files
@@ -100,8 +103,6 @@ class RequireResolver < Parser::TreeRewriter
     end
 
     warn "=> #{lib}"
-
-    raise Error, "library `#{lib}`could not be resolved to a file" unless file
 
     replacement = RequireResolver.new(
       file,
