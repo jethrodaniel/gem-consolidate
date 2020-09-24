@@ -10,7 +10,7 @@ context Gem::Consolidate do
     `bundle exec exe/consolidate example/lib/fib.rb 2>/dev/null > out`
 
     detail "snapshot does not match! Run rake:snapshot"
-    detail "=== diff ===\n```\n#{`diff #{snapshot} out`}```\n"
+    detail "=== diff snapshot <current>===\n```\n#{`diff #{snapshot} out`}```\n"
 
     expected = File.read(snapshot).gsub("ruby  : 2.7.1", "ruby  : #{RUBY_VERSION}")
 

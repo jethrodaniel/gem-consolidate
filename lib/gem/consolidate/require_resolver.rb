@@ -34,8 +34,7 @@ module Gem
 
       def run
         ast = @parser.parse(@buffer)
-        out = rewrite(@buffer, ast)
-        out.split("\n").join("\n") + "\n"
+        rewrite(@buffer, ast)
       end
 
       # @note Has to be public for Parser::TreeRewriter to do its thing

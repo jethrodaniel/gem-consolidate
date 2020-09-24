@@ -44,7 +44,7 @@ class Gem::Commands::ConsolidateCommand < ::Gem::Command
     name = options[:args].first
     raise Gem::CommandLineError, "missing GEM or FILE" unless name
 
-    Consolidate::Consolidator.new(
+    Gem::Consolidate::Consolidator.new(
       name,
       **options.slice(:header, :footer, :stdlib)
     ).run
