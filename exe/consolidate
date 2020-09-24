@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require "consolidate"
+require "gem-consolidate"
 
-Consolidate.start
+Gem::Consolidate.start

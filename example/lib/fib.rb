@@ -10,9 +10,9 @@ module Fib
 
     flip = [0, 1]
 
-    1.upto(n) { |i| flip[i%2] = flip.sum }
+    1.upto(n) { |i| flip[i % 2] = flip.sum }
 
-    flip[n%2]
+    flip[n % 2]
   end
 end
 

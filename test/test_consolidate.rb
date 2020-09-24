@@ -1,8 +1,8 @@
 require_relative "init"
 
-context Consolidate do
+context Gem::Consolidate do
   test "VERSION" do
-    refute(Consolidate::VERSION.nil?)
+    refute(Gem::Consolidate::VERSION.nil?)
   end
 
   test "snapshot matches" do

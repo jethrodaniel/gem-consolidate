@@ -18,7 +18,7 @@ context Fib do
       end
 
       test "largish (overflows long long int)" do
-        assert(Fib.fibonacci(94) == 19740274219868223167)
+        assert(Fib.fibonacci(94) == 19_740_274_219_868_223_167)
       end
     end
     test "errors on negative numbers" do
