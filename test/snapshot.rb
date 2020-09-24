@@ -15,7 +15,7 @@ require "English"
 # example/lib/fib/version.rb
 #------------------------------------------------------------
 module Fib
-  VERSION = "0.0.0"
+  VERSION = "0.0.0".freeze
 end
 #------------------------------------------------------------
 
@@ -65,9 +65,9 @@ module Fib
 
     flip = [0, 1]
 
-    1.upto(n) { |i| flip[i%2] = flip.sum }
+    1.upto(n) { |i| flip[i % 2] = flip.sum }
 
-    flip[n%2]
+    flip[n % 2]
   end
 end
 
@@ -85,7 +85,7 @@ module Fib
   module Utils
     module Over
       class NineThousand
-        MSG = "It's over nine thousand!"
+        MSG = "It's over nine thousand!".freeze
       end
     end
   end
