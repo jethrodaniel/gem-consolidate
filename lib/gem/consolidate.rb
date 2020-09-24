@@ -1,10 +1,11 @@
 require_relative "consolidate/consolidator"
+require_relative "consolidate/cli"
 
 module Gem
   module Consolidate
     def self.start
-      abort "input file not provided" unless f = ARGV.first
-      Consolidate::Consolidator.new(f).run
+      CLI.parse!
+      Consolidator.new(ARGV.first).run
     end
   end
 end

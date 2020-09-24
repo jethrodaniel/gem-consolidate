@@ -1,4 +1,4 @@
-$:.push File.expand_path("lib", __dir__)
+$LOAD_PATH.push File.expand_path("lib", __dir__)
 require "gem/consolidate/version"
 
 Gem::Specification.new do |s|
@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
   s.metadata["source_code_uri"] = s.homepage
 
   s.require_paths = ["lib"]
-  s.files         = Dir.glob("lib/**/*.rb")
-  s.test_files    = Dir.glob("spec/**/*.rb")
+  s.files         = Dir["lib/**/*.rb"] + Dir["exe/*"]
+  s.test_files    = Dir["test/**/*.rb"]
   s.bindir        = "exe"
   s.executables   = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
