@@ -1,4 +1,4 @@
-require_relative "../../consolidate"
+require_relative "../../gem/consolidate"
 
 require "rubygems/command"
 

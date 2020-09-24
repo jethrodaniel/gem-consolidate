@@ -1,3 +1,5 @@
+require "pathname"
+
 require_relative "require_resolver"
 require_relative "version"
 require_relative "error"
