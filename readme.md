@@ -23,9 +23,7 @@ $ gem consolidate -h
 For example
 
 ```
-git clone https://github.com/jethrodaniel/msh && cd msh
-bundle && bundle exec rake consolidate
-./msh
+git clone https://github.com/jethrodaniel/msh && cd msh && bundle && bundle exec rake consolidate && ./msh
 ```
 
 ## limitations
