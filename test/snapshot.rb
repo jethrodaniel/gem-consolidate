@@ -11,24 +11,18 @@ require "English"
 
 # require_relative "fib/version"
 
-#------------------------------------------------------------
-# example/lib/fib/version.rb
-#------------------------------------------------------------
+#=== start: example/lib/fib/version.rb
 module Fib
   VERSION = "0.0.0".freeze
 end
-#------------------------------------------------------------
+#=== end: example/lib/fib/version.rb
 
 # require_relative "fib/error"
 
-#------------------------------------------------------------
-# example/lib/fib/error.rb
-#------------------------------------------------------------
+#=== start: example/lib/fib/error.rb
 # require_relative "util/scanner"
 
-##-----------------------------------------------------------
-# example/lib/fib/util/scanner.rb
-##-----------------------------------------------------------
+##=== start: example/lib/fib/util/scanner.rb
 require "strscan"
 
 module Fib
@@ -36,18 +30,16 @@ module Fib
   end
   S = Scanner
 end
-##-----------------------------------------------------------
+##=== end: example/lib/fib/util/scanner.rb
 
 # require_relative "etc/wow"
 
-##-----------------------------------------------------------
-# example/lib/fib/etc/wow.rb
-##-----------------------------------------------------------
+##=== start: example/lib/fib/etc/wow.rb
 module Fib
   WOW = "- Owen Wilson".freeze
   W = WOW
 end
-##-----------------------------------------------------------
+##=== end: example/lib/fib/etc/wow.rb
 
 
 module Fib
@@ -55,7 +47,7 @@ module Fib
   end
   E = Error
 end
-#------------------------------------------------------------
+#=== end: example/lib/fib/error.rb
 
 # require_relative "fib/util/scanner" # resolved previously
 
@@ -73,14 +65,10 @@ end
 
 # require_relative "fib/util"
 
-#------------------------------------------------------------
-# example/lib/fib/util.rb
-#------------------------------------------------------------
+#=== start: example/lib/fib/util.rb
 # require_relative "util/over/9_000"
 
-##-----------------------------------------------------------
-# example/lib/fib/util/over/9_000.rb
-##-----------------------------------------------------------
+##=== start: example/lib/fib/util/over/9_000.rb
 module Fib
   module Utils
     module Over
@@ -90,13 +78,11 @@ module Fib
     end
   end
 end
-##-----------------------------------------------------------
+##=== end: example/lib/fib/util/over/9_000.rb
 
 # require_relative "util/parser"
 
-##-----------------------------------------------------------
-# example/lib/fib/util/parser.rb
-##-----------------------------------------------------------
+##=== start: example/lib/fib/util/parser.rb
 # require_relative "scanner" # resolved previously
 
 module Fib
@@ -104,7 +90,7 @@ module Fib
   end
   P = Parser
 end
-##-----------------------------------------------------------
+##=== end: example/lib/fib/util/parser.rb
 
 
 module Fib
@@ -113,5 +99,5 @@ module Fib
   end
   U = Utils
 end
-#------------------------------------------------------------
+#=== end: example/lib/fib/util.rb
 

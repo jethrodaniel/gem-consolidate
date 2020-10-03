@@ -99,9 +99,11 @@ module Gem
         pwd = RUBY_VERSION.gsub(".", "").to_i >= 260 ? Dir.pwd : Pathname.new(Dir.pwd)
         f = Pathname.new(file).relative_path_from(pwd).to_s
 
-        # TODO: clean up this evil
-        banner = "##{'#' * @indent}" + "-" * (60 - @indent) + "\n# #{f}\n##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
-        replacement = banner + replacement + "##{'#' * @indent}" + "-" * (60 - @indent) + "\n"
+        replacement = <<~BANNER
+          ##{'#' * @indent}=== start: #{f}
+          #{replacement.chomp}
+          ##{'#' * @indent}=== end: #{f}
+        BANNER
 
         insert_before(node.location.expression, "# ")
         insert_after(node.location.expression, "\n\n#{replacement.strip}\n")
