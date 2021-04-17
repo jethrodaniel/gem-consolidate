@@ -24,11 +24,9 @@ Gem::Specification.new do |s|
   s.add_dependency "parser"
 
   %w[
-    parser
-    rake
-    rubocop
-    test_bench
+    minitest
     pry
     pry-byebug
+    rake
   ].each { |lib| s.add_development_dependency(lib) }
 end

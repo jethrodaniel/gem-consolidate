@@ -4,8 +4,8 @@ require_relative "consolidate/cli"
 module Gem
   module Consolidate
     def self.start
-      CLI.parse!
-      Consolidator.new(ARGV.first).run
+      opts = CLI.parse!
+      Consolidator.new(ARGV.first, **opts).run
     end
   end
 end
