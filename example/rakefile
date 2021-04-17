@@ -1,7 +1,0 @@
-require "bundler/gem_tasks"
-task :default => :test
-
-task(:test) { sh "bench test" }
-
-require "rake/clean"
-CLEAN << "pkg"
