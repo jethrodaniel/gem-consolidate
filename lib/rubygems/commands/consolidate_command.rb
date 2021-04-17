@@ -4,19 +4,7 @@ require "rubygems/command"
 
 class Gem::Commands::ConsolidateCommand < ::Gem::Command
   def initialize
-    super "consolidate", "consolidate a Ruby script, print to stdout"
-
-    add_option "--footer=FOOTER", "text to append at end of file" do |footer|
-      options[:footer] = footer
-    end
-
-    add_option "--header=HEADER", "text to append at beginning of file" do |header|
-      options[:header] = header
-    end
-
-    add_option "--no-stdlib", "comment out stdlib `require`s (for MRuby)" do |bool|
-      options[:no_stdlib] = !bool
-    end
+    super "consolidate"
   end
 
   def usage
@@ -24,7 +12,7 @@ class Gem::Commands::ConsolidateCommand < ::Gem::Command
   end
 
   def description
-    Gem::Consolidate::CLI::DESC
+    Gem::Consolidate::CLI::HELP
   end
 
   def execute
@@ -33,7 +21,7 @@ class Gem::Commands::ConsolidateCommand < ::Gem::Command
 
     Gem::Consolidate::Consolidator.new(
       name,
-      **options.slice(:header, :footer, :stdlib)
+      **options
     ).run
   end
 end
