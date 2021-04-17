@@ -16,15 +16,7 @@ bundle && bundle exec rake
 
 ## usage
 
-```
-$ gem consolidate -h
-```
-
-For example
-
-```
-git clone https://github.com/jethrodaniel/msh && cd msh && bundle && bundle exec rake consolidate && ./msh
-```
+See the [specs](spec/consolidate_spec.rb).
 
 ## limitations
 
@@ -37,13 +29,4 @@ Only literal `require`s or `require_relative`s followed by a string will be proc
 - [ ] ensure only top-level `require`s (i.e, can't require inside a method)
 - [ ] panic on `autoload`
 - [ ] process entire `gem`s, reading the `gemspec`, considering `require_paths`, etc.
-- [ ] process entire input, use `TSort`
 - [ ] test for circular dependencies
-
-## contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/jethrodaniel/gem-consolidate.
-
-## license
-
-MIT.
