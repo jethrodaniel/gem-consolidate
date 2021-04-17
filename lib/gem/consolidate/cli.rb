@@ -26,6 +26,7 @@ module Gem
             --footer=TEXT    append TEXT at end of file
             --header=TEXT    append TEXT at beginning of file
             --no-stdlib      comment out stdlib `require`s
+            --exclude=LIBS   list of libraries to skip
             -h, --help       print this help
             -V, --version    show the version
       B
@@ -58,12 +59,20 @@ module Gem
             exit 2
           end
 
+          opts.on "--no-stdlib" do
+            options[:no_stdlib] = false
+          end
+
           opts.on "--footer=text" do |text|
             options[:footer] = text
           end
 
           opts.on "--header=text" do |text|
             options[:header] = text
+          end
+
+          opts.on "--exclude=LIBS", Array do |libs|
+            options[:skipped] = libs
           end
         end
       end

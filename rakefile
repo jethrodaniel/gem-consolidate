@@ -1,11 +1,12 @@
 require "rake/clean"
 require "bundler/gem_tasks"
 
-task :default => %i[test install fib]
+task :default => %i[test install]
 
-task :fib do
-  sh "gem consolidate example/lib/fib.rb --footer='1.upto(10).each{|n|p Fib.fibonacci(n)}' > fib.rb"
-  sh "ruby fib.rb"
+task :snapshot do
+  sh "bundle exec exe/consolidate lib/gem/consolidate.rb " \
+     "--exclude parser/current --footer='Gem::Consolidate.start' " \
+     "> spec/snapshot.rb"
 end
 
 require "rake/testtask"

@@ -15,6 +15,7 @@ module Gem
       logger
       openssl
       ostruct
+      optparse
       pathname
       readline
       reline

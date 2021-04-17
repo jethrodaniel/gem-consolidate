@@ -6,4 +6,4 @@
 /pkg/
 /spec/reports/
 /tmp/
-fib.bundle.rb
+.ruby-version

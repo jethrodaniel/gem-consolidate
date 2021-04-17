@@ -26,7 +26,7 @@ module Gem
         @files    = opts[:files] || abort("missing files")
         @files << @file.realpath
         @indent   = opts[:indent] || 0
-        @stdlib   = opts[:stdlib] || true
+        @skipped  = opts[:skipped] || []
         @parser   = Parser::CurrentRuby.new
         @buffer   = Parser::Source::Buffer.new("(#{file})")
         @buffer.source = File.read(file)
@@ -47,14 +47,8 @@ module Gem
 
         lib = node.children[2].children[0]
 
-        if stdlib?(lib) && req_type == :require
-          warn "=> #{lib} (stdlib)"
-
-          unless @stdlib
-            insert_before(node.location.expression, "# ")
-            insert_after(node.location.expression, " # stdlib excluded")
-          end
-
+        if @skipped.include?(lib) && req_type == :require
+          warn "=> #{lib} (skipped)"
           return
         end
 
@@ -92,7 +86,8 @@ module Gem
           file,
           :location => Pathname.new(file).dirname,
           :indent   => @indent + 1,
-          :files    => @files
+          :files    => @files,
+          :skipped  => @skipped
         ).run
 
         # https://bugs.ruby-lang.org/issues/10011
@@ -109,10 +104,6 @@ module Gem
         insert_after(node.location.expression, "\n\n#{replacement.strip}\n")
       end
       alias handle_require handle_require_relative
-
-      def stdlib? lib
-        Consolidate::STD_LIBS.include? lib
-      end
     end
   end
 end

@@ -13,7 +13,8 @@ module Gem
         @entry  = entry
         @header = opts[:header]
         @footer = opts[:footer]
-        @stdlib = opts[:stdlib] || true
+        @skipped = opts[:skipped] || []
+        @skipped += Consolidate::STD_LIBS
         @location = Pathname.new(Dir.pwd) + File.dirname(entry)
         @files = []
 
@@ -57,7 +58,7 @@ module Gem
           @entry,
           :location => @location,
           :files    => @files,
-          :stdlib   => @stdlib
+          :skipped  => @skipped
         ).run
       end
     end
