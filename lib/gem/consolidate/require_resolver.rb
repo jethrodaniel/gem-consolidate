@@ -1,11 +1,39 @@
-# == Consolidate Ruby `require`s into a single file.
+# == gem-consolidate
 #
-# In a more general sense, this is a dependency resolution problem.
+# Consolidate a gem into a single Ruby source file by resolving `require`
+# statements, like the C preprocessor's `#include`.
 #
-# Let's model the files and their dependencies as a graph,  with vertices for
-# each file, and edges for each `require`.
+# === Topological Sorting
 #
-# TODO
+# We have a bunch of source files, and we want to resove the dependencies
+# by pasting them in.
+#
+# For example, if file `a.rb` requires `b`, then `c`, we'd say
+#
+# ```
+# a.rb <-- require -- b.rb
+#      <-- require -- c.rb
+# ```
+#
+# How do we compile them into a single file?
+#
+# The ?straightforward? approach is to start with a single file, and recursively
+# resolve the inclusions as we go, keeping track of those we've already seen,
+# so as to not repeat ourselves.
+#
+# --- scrap?
+#
+# We can also model this as a directed graph, where files are vertices, and
+# the `require` statements are the edges.
+#
+# To resolve the dependencies, we want to visit every vertice at least
+# once, making sure that all of a vertice's edges have been visited
+# before the vertice is visited.
+#
+# The order in which we visit the vertices is the order in which we
+# should "visit" the dependencies when assembling our single-file.
+# ---
+
 
 require "pathname"
 require "parser/current"
@@ -18,15 +46,17 @@ module Gem
     class RequireResolver < Parser::TreeRewriter
       class Error < Gem::Consolidate::Error; end
 
-      def initialize file, **opts
+      def initialize file:, **opts
         super()
 
-        @file     = Pathname.new(file).realpath
-        @location = opts[:location] || Pathname.new(Dir.pwd)
-        @files    = opts[:files] || abort("missing files")
-        @files << @file.realpath
+        @file     = file
+        @visited  = opts[:visited] || []
+        @curr_dir = opts[:curr_dir] || Pathname.new(File.dirname(file))
         @indent   = opts[:indent] || 0
-        @skipped  = opts[:skipped] || []
+
+        @skipped = opts[:skipped] || []
+        @files << File.absolute_path(@file)
+
         @parser   = Parser::CurrentRuby.new
         @buffer   = Parser::Source::Buffer.new("(#{file})")
         @buffer.source = File.read(file)
@@ -37,7 +67,12 @@ module Gem
         rewrite(@buffer, ast)
       end
 
+      # $ ruby-parse -e "require 'ast'"
+      # (send nil :require
+      #   (str "ast"))
+      #
       # @note Has to be public for Parser::TreeRewriter to do its thing
+      #
       def on_send node
         req_type = node.children[1]
 
@@ -57,10 +92,6 @@ module Gem
 
       private
 
-      # $ ruby-parse -e "require 'ast'"
-      # (send nil :require
-      #   (str "ast"))
-      #
       def handle_require_relative lib, node
         # TODO: what order does Ruby use here?
         file = Dir.glob("#{@location + lib}.{rb,so}").first

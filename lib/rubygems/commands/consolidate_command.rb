@@ -32,12 +32,7 @@ class Gem::Commands::ConsolidateCommand < ::Gem::Command
   end
 
   def execute
-    name = options[:args].first
-    raise Gem::CommandLineError, "missing input file" unless name
-
-    Gem::Consolidate::Consolidator.new(
-      name,
-      **options
-    ).run
+    opts = CLI.parse! options[:args].first
+    Consolidator.new(**opts).run
   end
 end

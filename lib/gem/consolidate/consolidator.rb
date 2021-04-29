@@ -1,6 +1,7 @@
 require "pathname"
 
 require_relative "require_resolver"
+require_relative "require_mapper"
 require_relative "version"
 require_relative "error"
 
@@ -9,30 +10,43 @@ module Gem
     class Consolidator
       class Error < Consolidate::Error; end
 
-      def initialize entry, **opts
-        @entry  = entry
+      def initialize **opts
+        if gemspec = opts[:gem]
+          @files = gemspec.files
+                          .map do |f|
+                            gemspec.full_require_paths
+                                   .map do |dir|
+                                     File.join(dir, f.delete_prefix(File.basename(dir)))
+                                   end
+                          end.flatten.uniq.select { |f| File.file?(f) }
+          @paths = gemspec.full_require_paths
+
+require 'pry';require 'pry-byebug';binding.pry;nil
+puts
+
+          dependencies = @files.map do |file|
+            t = RequireResolver.new(file: file, paths: @paths).run
+          end
+          require 'pry';require 'pry-byebug';binding.pry;nil
+          puts
+
+        elsif file = opts[:file]
+        else
+          raise Error, "missing `gem` or `file`"
+        end
+
         @header = opts[:header]
         @footer = opts[:footer]
         @skipped = opts[:skipped] || []
         @skipped += Consolidate::STD_LIBS
         @location = Pathname.new(Dir.pwd) + File.dirname(entry)
         @files = []
-
-        if gemspec = ::Gem.loaded_specs[entry]
-          warn "Consolidating gem #{gemspec.name}..."
-          raise "gem not supported yet"
-        elsif File.file?(entry)
-          warn "Consolidating script `#{entry}`..."
-        else
-          raise Error, "gem or script `#{entry}` not found"
-        end
-      end
-
-      def self.run entry
-        new(entry).run
       end
 
       def run
+        warn "Consolidating gem `#{gemspec.name}`..."
+        warn "Consolidating script `#{entry}`..."
+
         puts @header if @header
         puts "#" + "-" * 60 + "\n"
         puts <<~MSG
@@ -47,8 +61,6 @@ module Gem
         puts "#" + "-" * 60 + "\n"
         puts body
         puts @footer if @footer
-
-        # [@header, single_file, @footer].join("\n").strip
       end
 
       private

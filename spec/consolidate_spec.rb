@@ -23,4 +23,8 @@ describe Gem::Consolidate do
       assert temp.read == snapshot.read, "snapshot doesn't match.\n#{cmd}n#{`#{cmd}`}"
     end
   end
+
+  it "sorts `require_relative`" do
+    _(Gem::Consolidate::VERSION).must_match /\d.\d.\d/
+  end
 end

@@ -31,16 +31,16 @@ module Gem
             -V, --version    show the version
       B
 
-      def self.parse!
-        abort "missing input file" unless ARGV.first
-        new.parse!
+      def self.parse! entry
+        abort "missing input file" unless entry
+        new.parse!(entry)
       rescue OptionParser::MissingArgument, OptionParser::InvalidOption => e
         abort ">>", e.message
       end
 
-      def parse!
+      def parse! entry
         option_parser.parse!
-        options
+        options.merge(parse_entry!(entry))
       end
 
       private
@@ -74,6 +74,22 @@ module Gem
           opts.on "--exclude=LIBS", Array do |libs|
             options[:skipped] = libs
           end
+        end
+      end
+
+      # @param entry [String] file or gem name
+      # @return opts [Hash]
+      #   :gem [Symbol] the path to the gemspec, if found
+      #   :file [Symbol] the full path of the file, if found
+      # @raises [Error] if the gem or file can't be found
+      #
+      def parse_entry! entry
+        if gemspec = ::Gem.loaded_specs[entry]
+          {gem: gemspec}
+        elsif File.file? entry
+          {file: File.absolute_path(entry)}
+        else
+          raise Error, "gem or script `#{entry}` not found"
         end
       end
     end
