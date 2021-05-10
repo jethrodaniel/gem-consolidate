@@ -5,7 +5,7 @@ module Gem
   end
 end
 
-module Gem::Consolidate
+class Gem::Consolidate::Consolidator
   STD_LIBS = %w[
     csv
     English
@@ -52,7 +52,7 @@ module Gem::Consolidate
   # Gem::Consolidate.start!
   # ```
   #
-  def self.start!
+  def start!
     name = ARGV.first
     abort "missing gem NAME" unless name
 
@@ -74,7 +74,7 @@ module Gem::Consolidate
 
   # Print the gem's source code, resolving `require`s.
   #
-  def self.expand file, files, req_paths, seen = []
+  def expand file, files, req_paths, seen = []
     warn "-> #{file}"
     dir = File.dirname(file)
     File.foreach(file) do |line|
@@ -116,19 +116,17 @@ module Gem::Consolidate
   #
   # Adapted from https://github.com/rubygems/rubygems/blob/96e5cff3df491c4d943186804c6d03b57fcb459b/lib/rubygems/commands/contents_command.rb
   #
-  class << self
-    def gem_files(spec)
-      spec.default_gem? ? files_in_default_gem(spec) : files_in_gem(spec)
-    end
-    def files_in_gem(spec)
-      files = spec.full_require_paths.flat_map { |p| Dir.glob("#{p}/**/*.{rb,so}") }
-    end
-    def files_in_default_gem(spec)
-      spec.files.flat_map do |file|
-        File.join(RbConfig::CONFIG['rubylibdir'], file)
-      end
+  def gem_files(spec)
+    spec.default_gem? ? files_in_default_gem(spec) : files_in_gem(spec)
+  end
+  def files_in_gem(spec)
+    files = spec.full_require_paths.flat_map { |p| Dir.glob("#{p}/**/*.{rb,so}") }
+  end
+  def files_in_default_gem(spec)
+    spec.files.flat_map do |file|
+      File.join(RbConfig::CONFIG['rubylibdir'], file)
     end
   end
 end
 
-Gem::Consolidate.start!
+Gem::Consolidate::Consolidator.new.start!
