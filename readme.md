@@ -16,17 +16,10 @@ bundle && bundle exec rake
 
 ## usage
 
-See the [specs](spec/consolidate_spec.rb).
+```
+ cat <(./gem-consolidate.rb msh) <(echo Msh.start) > msh.rb && ruby msh.rb -V
+```
 
 ## limitations
 
 Only literal `require`s or `require_relative`s followed by a string will be processed.
-
-## status
-
-- [x] `require_relative`
-- [ ] `require`
-- [ ] ensure only top-level `require`s (i.e, can't require inside a method)
-- [ ] panic on `autoload`
-- [ ] process entire `gem`s, reading the `gemspec`, considering `require_paths`, etc.
-- [ ] test for circular dependencies
