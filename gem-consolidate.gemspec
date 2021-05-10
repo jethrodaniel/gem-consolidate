@@ -1,5 +1,5 @@
 $LOAD_PATH.push File.expand_path("lib", __dir__)
-require "gem/consolidate/version"
+require "gem-consolidate"
 
 Gem::Specification.new do |s|
   s.name          = "gem-consolidate"
@@ -17,16 +17,12 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
   s.files         = Dir["lib/**/*.rb"] + Dir["exe/*"]
-  s.test_files    = Dir["test/**/*.rb"]
+  s.test_files    = Dir["spec/**/*.rb"]
   s.bindir        = "exe"
   s.executables   = Dir["exe/*"].map { |f| File.basename(f) }
 
-  s.add_dependency "parser"
-
   %w[
     minitest
-    pry
-    pry-byebug
     rake
   ].each { |lib| s.add_development_dependency(lib) }
 end

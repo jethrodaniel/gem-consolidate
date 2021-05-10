@@ -1,18 +1,10 @@
-require_relative "../../gem/consolidate"
+require_relative "../../gem-consolidate"
 
 require "rubygems/command"
 
 class Gem::Commands::ConsolidateCommand < ::Gem::Command
   def initialize
     super "consolidate"
-
-    add_option "--footer=FOOTER" do |footer|
-      options[:footer] = footer
-    end
-
-    add_option "--header=HEADER" do |header|
-      options[:header] = header
-    end
 
     add_option "--no-stdlib" do |bool|
       options[:no_stdlib] = !bool
@@ -24,15 +16,16 @@ class Gem::Commands::ConsolidateCommand < ::Gem::Command
   end
 
   def usage
-    Gem::Consolidate::CLI::USAGE
+    'consolidate [options]... FILE'
   end
 
   def description
-    Gem::Consolidate::CLI::DESC
+    "Consolidates a gem into a single file by replacing require " \
+      "statements with the file contents; prints to stdout."
   end
 
   def execute
-    opts = CLI.parse! options[:args].first
-    Consolidator.new(**opts).run
+    ARGV.shift # rm `consolidate`
+    Gem::Consolidate::Consolidator.new(**options).run!
   end
 end

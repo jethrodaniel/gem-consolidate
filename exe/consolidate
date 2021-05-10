@@ -2,4 +2,4 @@
 
 require "gem-consolidate"
 
-Gem::Consolidate.start
+Gem::Consolidate::Consolidator.new.run!

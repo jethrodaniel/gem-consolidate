@@ -2,10 +2,8 @@ require "spec_helper"
 require "minitest/autorun"
 
 def snap path
-  sh "bundle exec exe/consolidate lib/gem/consolidate.rb " \
-     "--exclude parser/current " \
-     "--footer='Gem::Consolidate.start' " \
-     "> #{path}"
+  sh "bundle exec exe/consolidate gem-consolidate > #{path}"
+  sh "cat exe/consolidate >> #{path}"
 end
 
 describe Gem::Consolidate do
@@ -22,9 +20,7 @@ describe Gem::Consolidate do
       cmd = "diff #{snapshot.path} #{temp.path}"
       assert temp.read == snapshot.read, "snapshot doesn't match.\n#{cmd}n#{`#{cmd}`}"
     end
-  end
 
-  it "sorts `require_relative`" do
-    _(Gem::Consolidate::VERSION).must_match /\d.\d.\d/
+    # todo: test the generated copy can generate itself again, i.e, bootstrap
   end
 end

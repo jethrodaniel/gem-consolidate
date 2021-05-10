@@ -4,9 +4,9 @@ require "bundler/gem_tasks"
 task :default => %i[test install]
 
 task :snapshot do
-  sh "bundle exec exe/consolidate lib/gem/consolidate.rb " \
-     "--exclude parser/current --footer='Gem::Consolidate.start' " \
-     "> spec/snapshot.rb"
+  path = "spec/snapshot.rb"
+  sh "bundle exec exe/consolidate gem-consolidate > #{path}"
+  sh "cat exe/consolidate >> #{path}"
 end
 
 require "rake/testtask"
