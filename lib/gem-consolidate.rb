@@ -11,6 +11,8 @@ class Gem::Consolidate::Consolidator
     csv
     English
     base64
+    singleton
+    monitor
     pp
     delegate
     tmpdir
@@ -45,20 +47,19 @@ class Gem::Consolidate::Consolidator
   ]
 
   USAGE = "#{$0} NAME"
-  REQ_REGEX = /^(require|require_relative)\s+['"]([\w\.\/]+)["']\s*$/
+  REQ_REGEX = /^\s*(require|require_relative)\s+['"]([\w\.\-\/]+)["']\s*$/
 
-  def initialize **opts
+  attr_reader :name, :excluded, :include_stdlib
+
+  def initialize name:, exclude: [], include_stdlib: true
+    @name = name
+    @exclude = exclude
+    @include_stdlib = include_stdlib
   end
 
   # Run `gem consolidate` command.
   #
-  # ```
-  # Gem::Consolidate.start!
-  # ```
-  #
   def run!
-    name = ARGV.first
-    abort "missing gem NAME" unless name
 
     begin
       gemspec = Gem::Specification.find_by_name(name)
@@ -79,16 +80,44 @@ class Gem::Consolidate::Consolidator
 
   private
 
+  def error msg, file:, line:
+    lines = File.read(file).split("\n")
+    max = lines.count
+    details = lines[line-5..line+5].map.with_index do |l,i|
+      n = i + line - 5
+      spaces = (lines.count.to_s.size - n.to_s.size)
+      "#{n == line ? '-> ' : '   '}#{n}#{' ' * spaces}| #{l}"
+    end.join("\n")
+    div = "-" * 60
+    raise "\n#{div}\n#{msg}\n\n#{file}:#{line}\n#{details}\n#{div}\n"
+  end
+
   # Print the gem's source code, resolving `require`s.
   #
   def expand file, files, req_paths, seen = []
     warn "-> #{file}"
     dir = File.dirname(file)
-    File.foreach(file) do |line|
+
+    File.foreach(file).with_index do |line, index|
       reqs = line.scan(REQ_REGEX)
       puts line if reqs.empty?
 
       reqs.each do |req_type, req|
+        if line =~ /^\s+/
+          error <<~MSG, file: file, line: index
+            Found a `require` statement that's not at the top-level.
+
+            `gem-consolidate` can't resolve these types of `require`s.
+
+            (we're just checking if the statment has leading space, not parsing yet)
+          MSG
+        end
+
+        if @exclude.include?(req)
+          puts line
+          next
+        end
+
         case req_type
         when "require_relative"
           if req =~ /\.(rb|so)$/
@@ -97,7 +126,8 @@ class Gem::Consolidate::Consolidator
             path = Dir.glob("#{File.join(dir, req)}.{rb,so}").first
           end
         when "require"
-          if STD_LIBS.include?(req) || (ENV['IGNORED'] || '').split(',').include?(req)
+          if STD_LIBS.include?(req)
+            line = @include_stdlib ? line : "# #{line}"
             puts line
             next
           end
@@ -108,12 +138,13 @@ class Gem::Consolidate::Consolidator
           end.first
         end
 
-        abort "can't find path for #{req_type} \"#{req}\"" unless path
+        abort "\nERROR: can't find path for #{req_type} \"#{req}\"" unless path
 
         path = File.absolute_path(path)
         next if seen.include?(path)
 
         seen << path
+        puts "# #{req_type} \"#{req}\""
         expand path, files, req_paths, seen
       end
     end
